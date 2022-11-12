@@ -155,8 +155,8 @@ const startServer = async () => {
 
 
   // setTimeout(() => {
+  console.log(`Server checks will start in 30secs`); 
   setInterval(() => {
-   console.log(`Server checks will start in 30secs`); 
     startProcess()
   },30000);
 
