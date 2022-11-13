@@ -22,10 +22,8 @@ contract tronGovernance {
 
     uint256[] public preparedReferenda;
     uint256[] public queuePreparRefBlocks; //the blocks that checks need to be run
-    // mapping(uint => uint) public preparedReferendumLoc;  //referendumIndex => index in preparedReferenda
     uint256[] public activeReferenda;
     uint256[] public queueActiveRefBlocks; //the blocks that checks need to be run
-    // mapping(uint => uint) public activeReferendumLoc;    //referendumIndex => index in activeReferenda
     uint256[] public expiredReferenda;
     mapping(uint256 => REFERENDUMSTATE) public referendumIsActive;
 
@@ -53,7 +51,9 @@ contract tronGovernance {
     //Treasuries
     uint256 public treasurerBalanceThreshold = 1100; //sun //up for project Governance Token TodoChange this to 1100 Tron
     address[] public treasurers;
+    string[] public treasurersNames;
     mapping(address => bool) public isTreasurer;
+    mapping(address => string) public treasurerName;
 
     //Voters
     mapping(uint256 => mapping(address => bool)) public isVoterOfReferendum;
@@ -100,16 +100,18 @@ contract tronGovernance {
         convictionMultiplier[3] = 4;
     }
 
-    function launchNewTreasury() external payable {
+    function launchNewTreasury(string memory name) external payable {
         require(
             msg.value >= treasurerBalanceThreshold,
             "launching treasury requires TRX"
         );
-        Treasury newTreasurer = new Treasury(msg.sender);
+        Treasury newTreasurer = new Treasury(msg.sender, name);
         address newTreasuryAddress = address(newTreasurer);
         payable(newTreasuryAddress).transfer(msg.value - 100);
         isTreasurer[newTreasuryAddress] = true;
         treasurers.push(newTreasuryAddress);
+        treasurersNames.push(name);
+        treasurerName[newTreasuryAddress] = name;
         emit newTreasuryLaunched(msg.sender, newTreasuryAddress, msg.value);
     }
 
@@ -146,7 +148,7 @@ contract tronGovernance {
 
         if (!referendumBeneficiary[msg.sender]) {
             referendumBeneficiary[msg.sender] = true;
-            beneficiaryScore[msg.sender] = 50;
+            beneficiaryScore[msg.sender] = 25;
         }
 
         require(
@@ -162,12 +164,12 @@ contract tronGovernance {
             "treasurer does not have enough funds"
         );
         require(
-            startInNumBlocks <= 20,
-            "startInNumBlocks must be less than 20"
+            startInNumBlocks <= 1728000,
+            "startInNumBlocks must be less than 1728000"
         );
         require(
-            duration >= 20 && duration <= 201600,
-            "duration must be <=201600 n >=20"
+            duration >= 10 && duration <= 2728000,
+            "duration must be <=2728000 n >=10"
         );
 
         uint256 startBlok = block.number + startInNumBlocks;
@@ -427,6 +429,10 @@ contract tronGovernance {
 
     function getTreasurers() public view returns (address[] memory) {
         return treasurers;
+    }
+
+    function getTreasurersNames() public view returns (string[] memory) {
+        return treasurersNames;
     }
 
     function getActiveVoteTokens() public view returns (voteToken[] memory) {

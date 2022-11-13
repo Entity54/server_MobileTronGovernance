@@ -9,7 +9,7 @@ const TronWeb = require('tronweb');
 const TronGovernance_raw = require('./Abis/tronGovernance.json');     
 const tronGovernance_ABI = TronGovernance_raw.abi;
 // ****************************************************************************
-const tronGovernanceContractAddress = "TBHLsbmX2mhSyWjXdh1fciCmHNbXHca8Yy";
+const tronGovernanceContractAddress = "TCs9fv7rnzj4aNgSnT2WzV27xUDbFvqbYS";
 // ****************************************************************************
 let tronWeb, tronGovernanceContract, counter = 0;
 
